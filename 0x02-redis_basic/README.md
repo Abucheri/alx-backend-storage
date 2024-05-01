@@ -1,5 +1,8 @@
 # 0x02. Redis basic
 
+![40eab4627f1bea7dfe5e](https://github.com/Abucheri/alx-backend-storage/assets/24778489/373c0041-2546-4eb3-be1f-707712afac7c)
+
+
 ## Install Redis on Ubuntu 18.04
 
 ```
