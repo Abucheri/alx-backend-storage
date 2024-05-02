@@ -18,7 +18,7 @@ def track_and_cache(method: Callable) -> Callable:
     result with an expiration time of 10 seconds.
 
     Args:
-        func (Callable): The function to be decorated.
+        method (Callable): The function to be decorated.
 
     Returns:
         Callable: The decorated function
