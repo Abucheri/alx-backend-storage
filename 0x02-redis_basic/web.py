@@ -6,9 +6,10 @@ decorator using functools.wraps.
 
 import requests
 import redis
-import time
 from typing import Callable
 from functools import wraps
+
+cache = redis.Redis()
 
 
 def track_and_cache(method: Callable) -> Callable:
@@ -23,28 +24,18 @@ def track_and_cache(method: Callable) -> Callable:
         Callable: The decorated function
     """
     @wraps(method)
-    def wrapper(url: str) -> str:
-        # Initialize Redis connection
-        redis_conn = redis.Redis()
+    def wrapper(url):
+        """
+        The wrapper
+        """
+        cache.incr(f"count:{url}")
+        cached_html = cache.get(f"cached:{url}")
+        if cached_html:
+            return cached_html.decode('utf-8')
 
-        # Track the number of accesses for this URL
-        count_key = f"count:{url}"
-        redis_conn.incr(count_key)
-
-        # Check if the result is already cached
-        cache_key = f"cache:{url}"
-        cached_result = redis_conn.get(cache_key)
-        if cached_result:
-            return cached_result.decode('utf-8')
-
-        # If not cached, retrieve HTML content of the URL
-        response = method(url)
-
-        # Cache the result with an expiration time of 10 seconds
-        redis_conn.setex(cache_key, 10, response)
-
-        return response
-
+        html_content = method(url)
+        cache.setex(f"cached:{url}", 10, html_content)
+        return html_content
     return wrapper
 
 
